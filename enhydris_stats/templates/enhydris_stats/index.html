@@ -10,7 +10,9 @@
             Number of stations with data for {{ year }} or later
             {% endblocktrans %}
         </td>
-        <td align='right'>{{ item.nstations }}</td>
+        {% for i in item.nstations %}
+          <td align='right'>{{ i.value }}</td>
+        {% endfor %}
     </tr>
   {% endfor %}
   <tr>
