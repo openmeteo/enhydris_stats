@@ -12,10 +12,11 @@ def home(request):
     data = []
     for year in years:
         dataitem = {'year': year}
-        dataitem['nstations'] = len(list(models.Gentity.objects.raw(
-            "SELECT * FROM hcore_gentity g WHERE g.id in "
-            "(SELECT gentity_id FROM hcore_timeseries t"
-            " WHERE timeseries_end_date(t.id) >= '%s-01-01')", [year])))
+        dataitem['nstations'] = models.Gentity.objects.extra(
+            where=["id in "
+                   "(SELECT gentity_id FROM hcore_timeseries t "
+                   "WHERE timeseries_end_date(t.id) >= '%s-01-01')"],
+            params=[year]).count()
         data.append(dataitem)
     return render_to_response('enhydris_stats/index.html',
                               {'data': data,
