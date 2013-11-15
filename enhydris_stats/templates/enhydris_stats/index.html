@@ -1,23 +1,20 @@
 {% extends "base.html" %}
-{% load i18n %}
 
 {% block content %}
 <table>
   {% for item in data %}
+    {% if forloop.first %}
+      <th></th>
+      {% for c in item.columns %}
+        <th>{{ c.name }}</th>
+      {% endfor %}
+    {% endif %}
     <tr>
-        <td>
-            {% blocktrans with year=item.year %}
-            Number of stations with data for {{ year }} or later
-            {% endblocktrans %}
-        </td>
-        {% for i in item.nstations %}
-          <td align='right'>{{ i.value }}</td>
+        <th>{{ item.heading }}</th>
+        {% for c in item.columns %}
+          <td align='right'>{{ c.value }}</td>
         {% endfor %}
     </tr>
   {% endfor %}
-  <tr>
-      <td>{% trans "Number of stations in database" %}</td>
-      <td align='right'>{{ nstations }}</td>
-  </tr>
 </table>
 {% endblock %}
