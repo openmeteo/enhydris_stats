@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<table>
+  {% for item in data %}
+    <tr>
+        <td>
+            {% blocktrans with year=item.year %}
+            Number of stations with data for {{ year }} or later
+            {% endblocktrans %}
+        </td>
+        <td align='right'>{{ item.nstations }}</td>
+    </tr>
+  {% endfor %}
+  <tr>
+      <td>{% trans "Number of stations in database" %}</td>
+      <td align='right'>{{ nstations }}</td>
+  </tr>
+</table>
+{% endblock %}
