@@ -1,7 +1,9 @@
 from django.conf.urls import patterns, url
 
+from enhydris_stats.views import HomeView
+
 urlpatterns = patterns(
     '',
 
-    url(r'^$', 'enhydris_stats.views.home', name='home'),
+    url(r'^$', HomeView.as_view(), name='home'),
 )
