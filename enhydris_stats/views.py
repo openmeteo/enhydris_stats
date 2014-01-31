@@ -66,7 +66,7 @@ class StationsListView(TemplateView):
             variables = {}  # Variable name to end year mapping
             ts = models.Timeseries.objects.filter(gentity=station).extra(
                 select={'t_end_date': 'timeseries_end_date(id)'},
-                where=['EXTRACT(YEAR FROM timeseries_end_date(id)) >= {}'
+                where=['EXTRACT(YEAR FROM timeseries_end_date(id)) >= {0}'
                        .format(self.min_end_year)])
             for t in ts:
                 variables[t.variable.descr] = max(
