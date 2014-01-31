@@ -44,18 +44,24 @@ class HomeView(TemplateView):
         return context
 
 
-def stations_list(request):
-    stations = models.Gentity.objects.extra(
-        where=["id in "
-               "(SELECT gentity_id FROM hcore_timeseries t "
-               "WHERE timeseries_end_date(t.id) IS NOT NULL)"])
-    for station in stations:
-        station.variables = []
-        for t in models.Timeseries.objects.filter(gentity=station).extra(
-                where=["timeseries_end_date(id) IS NOT NULL"]):
-            if t.variable.descr not in station.variables:
-                station.variables.append(t.variable.descr)
-        station.variables.sort()
-    return render_to_response('enhydris_stats/stations_list.html',
-                              {'stations': stations},
-                              context_instance=RequestContext(request))
+class StationsListView(TemplateView):
+    template_name = 'enhydris_stats/stations_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(StationsListView, self).get_context_data(**kwargs)
+        context['stations'] = self._get_stations()
+        return context
+
+    def _get_stations(self):
+        stations = models.Gentity.objects.extra(
+            where=["id in "
+                   "(SELECT gentity_id FROM hcore_timeseries t "
+                   "WHERE timeseries_end_date(t.id) IS NOT NULL)"])
+        for station in stations:
+            station.variables = []
+            for t in models.Timeseries.objects.filter(gentity=station).extra(
+                    where=["timeseries_end_date(id) IS NOT NULL"]):
+                if t.variable.descr not in station.variables:
+                    station.variables.append(t.variable.descr)
+            station.variables.sort()
+        return stations
