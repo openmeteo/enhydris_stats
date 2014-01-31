@@ -12,7 +12,11 @@
     <tr>
       <th>{{ station.id }}</th>
       <td>{{ station.name }}</td>
-      <td>{{ station.variables|join:', ' }}</td>
+      <td>{% for v in station.variables %}
+            {{ v.name }} ({{ v.end_year }})
+            {% if not forloop.last %},{% endif %}
+          {% endfor %}
+      </td>
     </tr>
   {% endfor %}
 </table>

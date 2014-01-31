@@ -53,15 +53,19 @@ class StationsListView(TemplateView):
         return context
 
     def _get_stations(self):
-        stations = models.Gentity.objects.extra(
-            where=["id in "
-                   "(SELECT gentity_id FROM hcore_timeseries t "
-                   "WHERE timeseries_end_date(t.id) IS NOT NULL)"])
-        for station in stations:
+        all_stations = models.Gentity.objects.all()
+        stations = []
+        for station in all_stations:
+            variables = {}  # Variable name to end year mapping
+            ts = models.Timeseries.objects.filter(gentity=station).extra(
+                select={'t_end_date': 'timeseries_end_date(id)'},
+                where=['timeseries_end_date(id) IS NOT NULL'])
+            for t in ts:
+                variables[t.variable.descr] = max(
+                    t.t_end_date.year, variables.get(t.variable.descr, 0))
             station.variables = []
-            for t in models.Timeseries.objects.filter(gentity=station).extra(
-                    where=["timeseries_end_date(id) IS NOT NULL"]):
-                if t.variable.descr not in station.variables:
-                    station.variables.append(t.variable.descr)
-            station.variables.sort()
+            for v in variables:
+                station.variables.append({'name': v, 'end_year': variables[v]})
+            if variables:
+                stations.append(station)
         return stations
